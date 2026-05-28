@@ -1,0 +1,79 @@
+name: iamdataeng-evaluate
+
+# Triggered on every push to any branch. The IAmDataEng app listens to the
+# `workflow_run` webhook for this exact workflow name and ingests the verdict
+# into the learner's dashboard. DO NOT rename this workflow.
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    name: Evaluate storage.iceberg-compaction
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # We don't use `services:` here because the Iceberg REST catalog depends on
+    # MinIO being healthy AND the `warehouse` bucket existing before it boots.
+    # GitHub Actions' `services` blocks have no ordering / health dependencies
+    # between them. We use docker compose directly, same file the devcontainer
+    # uses — one stack definition, one source of truth.
+
+    steps:
+      - name: Checkout learner fork
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start local lakehouse stack (MinIO + Iceberg REST)
+        run: |
+          docker compose up -d
+          # Wait for both endpoints to be healthy. Same probe as the devcontainer.
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:9000/minio/health/live >/dev/null 2>&1 \
+               && curl -fsS http://localhost:8181/v1/config >/dev/null 2>&1; then
+              echo "stack healthy after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "stack did not become healthy within 60s"
+          docker compose logs --tail=100
+          exit 1
+
+      - name: Regenerate micro-batch fixtures
+        # Deterministic: same seed, same byte-stable Parquet output.
+        run: python -m fixtures.generate_fixtures
+
+      # Note: the test rubric's `compacted_table` fixture re-runs
+      # `fixtures.seed_iceberg` itself, so we don't need to run it here.
+      # Keeping CI minimal — one seed call total.
+
+      - name: Run evaluation rubric
+        run: pytest tests/ -v --tb=short
+
+      - name: Dump stack logs on failure
+        if: failure()
+        run: |
+          echo "::group::minio logs"
+          docker compose logs minio --tail=100 || true
+          echo "::endgroup::"
+          echo "::group::iceberg-rest logs"
+          docker compose logs iceberg-rest --tail=100 || true
+          echo "::endgroup::"
+
+      - name: Tear down stack
+        if: always()
+        run: docker compose down -v

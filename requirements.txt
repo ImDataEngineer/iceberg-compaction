@@ -1,0 +1,4 @@
+pyiceberg[s3fs,pyarrow]==0.7.1
+pyarrow==17.0.0
+duckdb==1.1.3
+pytest==8.3.4

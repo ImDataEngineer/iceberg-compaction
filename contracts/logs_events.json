@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "logs_events — Iceberg table contract for the small-files scenario",
+  "description": "Authoritative shape of the Iceberg table the seeder builds and the learner compacts. Schema and (lack of) partition spec are fixed: the project teaches file-layout maintenance, not partitioning. Partitioning was learned in iceberg-partitioning; here the table is intentionally UN-partitioned so the small-files problem cannot be masked by partition pruning.",
+  "catalog_name": "local",
+  "namespace": "default",
+  "table_name": "logs_events",
+  "full_identifier": "default.logs_events",
+  "columns": [
+    { "name": "event_id",   "iceberg_type": "long",      "required": true,  "description": "Globally unique event id; primary key, never null. Densely packed integers within a micro-batch." },
+    { "name": "tenant_id",  "iceberg_type": "int",       "required": true,  "description": "Tenant identifier, 1..10. Skewed distribution — tenant 1 produces ~40% of traffic. Sort-order target #1." },
+    { "name": "event_time", "iceberg_type": "timestamp", "required": true,  "description": "Event timestamp, microsecond precision, spread over one hour. Sort-order target #2 (within tenant)." },
+    { "name": "event_type", "iceberg_type": "string",    "required": true,  "description": "One of: page_view, click, purchase, error, signup. Low cardinality." },
+    { "name": "payload",    "iceberg_type": "string",    "required": true,  "description": "Short payload string (~30 bytes). Bulk of the row size — present so 600 micro-batches × ~30 rows actually weigh in the KB range each." }
+  ],
+  "partition_spec": [],
+  "sort_order_target": [
+    { "column": "tenant_id",  "direction": "ascending" },
+    { "column": "event_time", "direction": "ascending" }
+  ],
+  "notes": [
+    "DELIBERATELY UN-PARTITIONED. The catalog already has iceberg-partitioning for that conversation. Here we focus on file layout within a single (unpartitioned) namespace.",
+    "The 'sort_order_target' is not enforced at table-creation time on purpose — the learner sets it via Table.replace_sort_order(...) (or via rewrite_data_files's sort strategy) as part of the compaction work.",
+    "The table identifier in the REST catalog is `default.logs_events`."
+  ]
+}

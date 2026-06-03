@@ -1,6 +1,12 @@
+> *Also available in [French](./README.fr.md).*
+
+[![Template](https://img.shields.io/badge/repo-template-1e293b?style=flat-square)](https://github.com/ImDataEngineer/iceberg-compaction/generate) [![iamdataeng.com](https://img.shields.io/badge/iamdataeng.com-2563eb?style=flat-square)](https://iamdataeng.com/projects/storage.iceberg-compaction)
+
+> **Context.** Coursework template from [iamdataeng.com/projects/storage.iceberg-compaction](https://iamdataeng.com/projects/storage.iceberg-compaction). Fork, complete the TODO blocks, push, receive a pedagogical CI verdict. Not a maintained open-source project, an evaluated exercise.
+
 # Small files: every data engineer's fight — `storage.iceberg-compaction`
 
-> **Level**: senior · **Estimated time**: ~10 h · **Paid IAmDataEng project (€49)**
+> **Level**: senior · **Estimated time**: ~10 h · **Paid IamDataEngineer project (€49)**
 > **Framework axes**: `storage`, `software_engineering_dataops`
 > **Prerequisites**: you've already done `storage.partitioned-lakehouse` (or equivalent).
 > You know what an Iceberg snapshot, a manifest, a partition spec is.
@@ -65,7 +71,7 @@ deliverable, not a CI gate.
 
 ## Getting started
 
-If you're in GitHub Codespaces (one-click open from the IAmDataEng app),
+If you're in GitHub Codespaces (one-click open from the IamDataEngineer app),
 everything is ready:
 
 - MinIO + Iceberg REST are running (`docker compose ps` should show 2
@@ -104,7 +110,7 @@ pytest tests/ -v
 
 Once the 6 checks pass locally, **commit + push** to your fork. GitHub
 Actions CI replays the rubric (re-seed + your compact.py + tests). The
-verdict appears in your IAmDataEng dashboard.
+verdict appears in your IamDataEngineer dashboard.
 
 ---
 

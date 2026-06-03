@@ -1,6 +1,12 @@
+> *Aussi disponible en [anglais](./README.md).*
+
+[![Template](https://img.shields.io/badge/repo-template-1e293b?style=flat-square)](https://github.com/ImDataEngineer/iceberg-compaction/generate) [![iamdataeng.com](https://img.shields.io/badge/iamdataeng.com-2563eb?style=flat-square)](https://iamdataeng.com/projects/storage.iceberg-compaction)
+
+> **Contexte.** Template pédagogique de [iamdataeng.com/projects/storage.iceberg-compaction](https://iamdataeng.com/projects/storage.iceberg-compaction). Fork, complète les TODO, push, reçois un verdict CI pédagogique. Pas un projet open source maintenu, un exercice évalué.
+
 # Petits fichiers : le combat de l'ingénieur data — `storage.iceberg-compaction`
 
-> **Niveau** : senior · **Durée estimée** : ~10 h · **Projet payant IAmDataEng (49 €)**
+> **Niveau** : senior · **Durée estimée** : ~10 h · **Projet payant IamDataEngineer (49 €)**
 > **Axes framework** : `storage`, `software_engineering_dataops`
 > **Prérequis** : tu as déjà fait `storage.partitioned-lakehouse` (ou équivalent).
 > Tu sais ce qu'est un snapshot Iceberg, un manifest, un partition spec.
@@ -27,7 +33,7 @@ prendre **200 ms**.
 Cause : le planning du reader (lecture des manifests + ouverture des
 fichiers) domine quand chaque data file pèse moins que son footer Parquet.
 Iceberg ne peut prune AUCUN fichier parce que chaque fichier contient un peu
-de chaque tenant. La file table est petite ; le métadonnée et le round-trip
+de chaque tenant. La file table est petite ; les métadonnées et le round-trip
 sont gros.
 
 Ton job :
@@ -67,7 +73,7 @@ gating de CI.
 ## Comment commencer
 
 Si tu es dans GitHub Codespaces (ouverture en un clic depuis l'app
-IAmDataEng), tout est prêt :
+IamDataEngineer), tout est prêt :
 
 - MinIO + Iceberg REST tournent (`docker compose ps` doit montrer 2 services).
 - Les 600 fixtures Parquet sont générées sous `fixtures/parquet/`.
@@ -104,7 +110,7 @@ pytest tests/ -v
 
 Quand les 6 checks passent en local, **commit + push** sur ton fork. La CI
 GitHub Actions rejoue la rubric (re-seed + ton compact.py + tests). Le
-verdict apparaît dans ton dashboard IAmDataEng.
+verdict apparaît dans ton dashboard IamDataEngineer.
 
 ---
 
